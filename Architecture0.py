@@ -50,11 +50,20 @@ def build_rnn():
 
 	# Run the data through the RNN layers
 	with tf.name_scope("Bi_RNN"):
-		outputs, output_states = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, embed, 
+		# Look at the explanation in the link below
+		# https://stackoverflow.com/questions/49242266/difference-between-multirnncell-and-stack-bidirectional-dynamic-rnn-in-tensorflo
+		o, output_states = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, embed, 
 			initial_state_fw=initial_state_fw, initial_state_bw=initial_state_bw)
-		(output_fw, output_bw) = outputs
+		(output_fw, output_bw) = o
 
-	print(type(output_fw), type(output_bw))
+	with tf.name_scope('Stacking'):
+		# We are going to stack the 
+		output = tf.concat([output_fw, output_bw], 2)
+
+	with tf.name_scope('Pre-Dense_layer'):
+		output = tf.reshape(output, [-1, output.get_shape()[2]])
+	
+	print(output.get_shape())
 
 
 
