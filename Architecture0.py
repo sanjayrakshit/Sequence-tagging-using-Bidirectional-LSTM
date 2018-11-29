@@ -65,6 +65,19 @@ def build_rnn():
 	
 	print(output.get_shape())
 
+	labels = tf.reshape(labels, [-1, num_class])
+
+	with tf.name_scope('cost'):
+		cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=tf.stop_gradients(labels), logits=output))
+
+		tf.summary.scalar('cost', cost)
+
+	with tf.name_scope('accuracy'):
+		corr_pred = tf.equals(tf.argmax(output, 1), tf.argmax(labels, 1))
+		accuracy = tf.reduce_mean(tf.cast(corr_pred, tf.float32))
+
+		tf.summary.scalar('accuracy', accuracy)
 
 
+		
 build_rnn()
